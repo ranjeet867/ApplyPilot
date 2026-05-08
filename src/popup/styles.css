@@ -1,0 +1,389 @@
+/* ── ApplyPilot Popup Styles ──────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --indigo:   #4F46E5;
+  --violet:   #6D28D9;
+  --green:    #10B981;
+  --amber:    #F59E0B;
+  --red:      #EF4444;
+  --slate:    #94A3B8;
+  --bg:       #F8FAFC;
+  --card:     #FFFFFF;
+  --text:     #1E293B;
+  --muted:    #64748B;
+  --border:   #E2E8F0;
+  --hover:    #F1F5F9;
+}
+
+body {
+  width: 420px;
+  min-height: 560px;
+  max-height: 600px;
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  color: #fff;
+}
+
+.header-logo {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.header-title {
+  font-size: 15px;
+  font-weight: 700;
+  flex: 1;
+}
+
+.header-subtitle {
+  font-size: 10px;
+  opacity: .7;
+  display: block;
+  font-weight: 400;
+}
+
+.header-settings {
+  background: rgba(255,255,255,.15);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  padding: 5px 8px;
+  font-size: 15px;
+  transition: background .15s;
+}
+
+.header-settings:hover { background: rgba(255,255,255,.25); }
+
+/* ── Tabs ────────────────────────────────────────────────────────────────── */
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+
+.tab {
+  flex: 1;
+  padding: 9px 6px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+}
+
+.tab.active {
+  color: var(--indigo);
+  border-bottom-color: var(--indigo);
+}
+
+.tab:hover:not(.active) {
+  color: var(--text);
+  background: var(--hover);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── Job List Tab ────────────────────────────────────────────────────────── */
+
+.jobs-toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 8px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.search-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  outline: none;
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color .15s;
+}
+
+.search-input:focus { border-color: var(--indigo); }
+
+.filter-select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  outline: none;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.jobs-list {
+  overflow-y: auto;
+  max-height: 440px;
+}
+
+.job-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  transition: background .12s;
+  cursor: default;
+}
+
+.job-card:hover { background: var(--hover); }
+
+.job-card-body { flex: 1; min-width: 0; }
+
+.job-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.job-company {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.job-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.job-age { font-size: 10px; color: var(--slate); }
+
+.job-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.btn-open {
+  padding: 4px 10px;
+  background: var(--indigo);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .12s;
+}
+
+.btn-open:hover { background: #4338CA; }
+
+.btn-skip {
+  padding: 3px 8px;
+  background: none;
+  color: var(--slate);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all .12s;
+}
+
+.btn-skip:hover { color: var(--red); border-color: var(--red); }
+
+.btn-applied {
+  padding: 3px 8px;
+  background: none;
+  color: var(--green);
+  border: 1px solid var(--green);
+  border-radius: 6px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all .12s;
+}
+
+.btn-applied:hover { background: #ECFDF5; }
+
+/* ── Status badge ────────────────────────────────────────────────────────── */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-badge.new     { background: #EEF2FF; color: var(--indigo); }
+.status-badge.opened  { background: #FFFBEB; color: #D97706; }
+.status-badge.applied { background: #ECFDF5; color: #059669; }
+.status-badge.skipped { background: #F8FAFC; color: var(--slate); }
+.status-badge.failed  { background: #FEF2F2; color: #DC2626; }
+
+/* ── Empty / loading states ──────────────────────────────────────────────── */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-state .empty-icon { font-size: 36px; margin-bottom: 10px; }
+.empty-state p { font-size: 13px; line-height: 1.5; }
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ── Add job button ──────────────────────────────────────────────────────── */
+
+.add-job-bar {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+}
+
+.btn-add-job {
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.btn-add-job:hover { border-color: var(--indigo); color: var(--indigo); background: #EEF2FF; }
+
+/* ── Stats Tab ───────────────────────────────────────────────────────────── */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px;
+}
+
+.stat-card {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--indigo);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+/* ── This Page Tab ───────────────────────────────────────────────────────── */
+
+.page-tab-inner {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.page-tab-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.page-tab-sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.page-fill-btn {
+  padding: 10px;
+  background: var(--indigo);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.page-fill-btn:hover { background: #4338CA; }
+
+.page-warning {
+  font-size: 11px;
+  color: var(--amber);
+  text-align: center;
+}
+
+/* ── Notes textarea ──────────────────────────────────────────────────────── */
+
+.notes-textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: inherit;
+  resize: none;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }

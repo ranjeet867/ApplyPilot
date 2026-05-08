@@ -1,0 +1,24 @@
+node_modules/
+dist/
+*.local
+.DS_Store
+
+# Build artifacts & archives
+*.zip
+*.tar.gz
+
+# Personal session files (not part of the extension)
+job_application_report_*.md
+job_apply_report_*.md
+job-apply-report-*.md
+job_apply_session_*.md
+SCHEDULED_TASK_UPDATE_PENDING.md
+APPLYPILOT_IMPROVEMENT_NOTES.md
+x-tweet-*.md
+reddit-*.md
+reddit-karma-builder/
+generate_icons.py
+
+# Temp files
+zij5eMeo
+ziyzwFle

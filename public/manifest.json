@@ -1,0 +1,110 @@
+{
+  "manifest_version": 3,
+  "name": "ApplyPilot",
+  "version": "2.3.0",
+  "description": "Job application assistant. Autofill forms, track applications, upload resume & cover letter. Works without API keys — AI cover letters optional.",
+  "icons": {
+    "16":  "icons/icon16.png",
+    "32":  "icons/icon32.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "32":  "icons/icon32.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "ApplyPilot"
+  },
+  "commands": {
+    "toggle-panel": {
+      "suggested_key": {
+        "default": "Alt+Shift+A",
+        "mac":     "Alt+Shift+A"
+      },
+      "description": "Toggle ApplyPilot fill panel on this page"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content/gmail.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.linkedin.com/*",
+        "https://linkedin.com/*"
+      ],
+      "js": ["content/linkedin.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/jobPage.js"],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "exclude_matches": [
+        "https://mail.google.com/*",
+        "https://www.linkedin.com/*",
+        "https://linkedin.com/*"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "activeTab",
+    "scripting",
+    "tabs",
+    "notifications",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://www.linkedin.com/*",
+    "https://linkedin.com/*",
+    "https://*.greenhouse.io/*",
+    "https://*.lever.co/*",
+    "https://*.workday.com/*",
+    "https://*.myworkdayjobs.com/*",
+    "https://*.jobvite.com/*",
+    "https://*.icims.com/*",
+    "https://*.smartrecruiters.com/*",
+    "https://*.taleo.net/*",
+    "https://*.bamboohr.com/*",
+    "https://*.recruitee.com/*",
+    "https://*.personio.de/*",
+    "https://*.ashbyhq.com/*",
+    "https://*.breezy.hr/*",
+    "https://*.join.com/*",
+    "https://join.com/*",
+    "https://*.jobs.de/*",
+    "https://*.stepstone.de/*",
+    "https://*.xing.com/*",
+    "https://*.arbeitsagentur.de/*",
+    "https://*.indeed.com/*",
+    "https://indeed.com/*",
+    "https://*.glassdoor.com/*",
+    "https://glassdoor.com/*",
+    "https://*.glassdoor.de/*",
+    "https://api.anthropic.com/*",
+    "https://api.openai.com/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*", "pdf.worker.min.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
