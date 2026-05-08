@@ -6,6 +6,10 @@ ApplyPilot detects form fields on job application pages, maps them to your profi
 
 No backend. No tracking. No data collection. Everything stays in your browser.
 
+<p align="center">
+  <img src="applypilot_demo.gif" alt="ApplyPilot Demo — auto-filling a Greenhouse application" width="750">
+</p>
+
 ---
 
 ## Features
