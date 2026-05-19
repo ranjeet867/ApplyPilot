@@ -1,5 +1,5 @@
 /**
- * ApplyPilot — Job Application Page content script  (v1.9)
+ * ApplyPilot — Job Application Page content script  (v2.4)
  *
  * New in v1.1:
  *  • ATS-specific JD extraction (Greenhouse, Lever, Ashby, Workday, etc.)
@@ -769,6 +769,17 @@ function detectFields(): DetectedField[] {
         }
       }
     }
+    // Unmatched text inputs — detect location/city questions missed by FIELD_PATTERNS
+    // This catches Lever/Jobgether "Where are you located?" free-text questions
+    else if (el.tagName === 'INPUT' && ((el as HTMLInputElement).type === 'text' || !(el as HTMLInputElement).type)) {
+      const labelText = getLabel(el).toLowerCase();
+      const placeholder = (el as HTMLInputElement).placeholder?.toLowerCase() ?? '';
+      const combined = `${labelText} ${placeholder}`;
+      if (/where.*(based|located|live)|current.*(location|city)|your.*(location|city)/i.test(combined)) {
+        results.push({ type: 'city', element: el, inputType: 'input', label: getLabel(el), confidence: 0.82 });
+        detectedEls.add(el);
+      }
+    }
     // Unmatched textareas — custom questions (motivation, values, technical, "why us", etc.)
     else if (el.tagName === 'TEXTAREA') {
       const labelText = getLabel(el).toLowerCase();
@@ -1395,13 +1406,20 @@ async function fillFields() {
       }
     } else {
       // For numeric-only fields, strip non-digit characters (phone: "+49 152..." → "49152...", salary: "75000 EUR" → "75000")
+      // Extended to detect SmartRecruiters and other ATS that use pattern/step/min attributes (#49)
       let fillValue = value;
       const inp = field.element as HTMLInputElement;
-      if (inp.type === 'number' || inp.inputMode === 'numeric' || inp.inputMode === 'decimal') {
+      const isNumericField = inp.type === 'number' || inp.inputMode === 'numeric' || inp.inputMode === 'decimal'
+        || (inp.pattern && /^\[?\\?d/.test(inp.pattern))  // pattern="[0-9]*" or pattern="\d+"
+        || (inp.step && inp.step !== 'any')                // step="1" etc. implies numeric
+        || (inp.min !== '' && inp.min != null && !isNaN(Number(inp.min)));  // min="0" implies numeric
+      if (isNumericField) {
         if (field.type === 'phone') {
           fillValue = value.replace(/[^\d]/g, '');   // digits only for phone number fields
         } else if (field.type === 'salary' || field.type === 'salaryMin' || field.type === 'salaryMax') {
           fillValue = value.replace(/[^\d.]/g, '');  // digits + decimal for salary fields
+        } else if (field.type === 'yearsOfExperience') {
+          fillValue = value.replace(/[^\d]/g, '');   // digits only
         }
       }
       setNativeValue(field.element, fillValue);
@@ -1444,7 +1462,17 @@ async function fillFields() {
   }
 
   // ── Auto-submit in full-auto mode ──────────────────────────────────────────
-  if (settings?.automationMode === 'full-auto') {
+  // Safety: never auto-submit on Indeed — their forms often pre-select defaults for salary,
+  // work-from-office, and privacy that may not reflect user preferences (#56)
+  const currentATS = detectATS();
+  const isIndeed = currentATS?.key === 'indeed.com' || location.hostname.includes('indeed');
+  if (settings?.automationMode === 'full-auto' && isIndeed) {
+    console.log('[ApplyPilot] Auto-submit blocked on Indeed — review answers before submitting.');
+    if (statusEl) {
+      statusEl.innerHTML = `✓ ${filled} fields filled. ⚠️ <strong>Indeed: please review answers and submit manually.</strong>`;
+      statusEl.style.color = '#D97706';
+    }
+  } else if (settings?.automationMode === 'full-auto') {
     // Wait for async validation to settle, then check for errors before submitting
     setTimeout(async () => {
       const errors = scanFormErrors();
@@ -1609,6 +1637,12 @@ function generateTextareaResponse(label: string): string {
   const experience = settings?.profile?.yearsOfExperience || '5+';
   const skills = settings?.profile?.skills?.slice(0, 5).join(', ') || 'relevant technologies';
 
+  // Location questions — return city, country directly (not a long-form answer)
+  if (/where.*(based|located|live)|current.*(location|city)|your.*(location|city)/i.test(l)) {
+    const city = (settings?.profile?.city || '').split(',')[0].trim();
+    const country = settings?.profile?.country || '';
+    return country ? `${city}, ${country}` : city;
+  }
   if (/why.*interest|why.*apply|why.*join|why.*company|why.*us|what.*attract/i.test(l)) {
     return `I am excited about this opportunity because the role aligns with my ${experience} years of experience in ${skills}. I am eager to contribute to the team and grow professionally.`;
   }
@@ -3125,7 +3159,20 @@ function getValueForField(type: FieldType, profile?: UserProfile, field?: Detect
     case 'fullName':         return `${profile.firstName} ${profile.lastName}`.trim() || profile.name || '';
     case 'email':            return profile.email;
     case 'phone':            return profile.phone;
-    case 'city':             return (profile.city || '').split(',')[0].trim(); // "Munich, Germany" → "Munich" for autocomplete compatibility
+    case 'city': {
+      const cityOnly = (profile.city || '').split(',')[0].trim();
+      // For open-ended "Where are you located?" questions, return "City, Country" for clarity
+      // For autocomplete-style fields (name/id contains "city"), return just city name
+      if (field) {
+        const fl = (field.label || '').toLowerCase();
+        const fn = ((field.element as HTMLInputElement).name || '').toLowerCase();
+        const fi = ((field.element as HTMLInputElement).id || '').toLowerCase();
+        if (/where.*(based|located|live)|current.*location|your.*location/i.test(fl) && !/\bcity\b/i.test(`${fn} ${fi}`)) {
+          return profile.country ? `${cityOnly}, ${profile.country}` : cityOnly;
+        }
+      }
+      return cityOnly; // "Munich, Germany" → "Munich" for autocomplete compatibility
+    }
     case 'country':          return profile.country;
     case 'salary':
     case 'salaryMin':        return profile.salaryMin;

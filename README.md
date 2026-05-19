@@ -233,4 +233,4 @@ Contributions are welcome! Here are some areas where help is appreciated:
 
 ---
 
-**ApplyPilot v2.3.0** — Made for job seekers who value their time.
+**ApplyPilot v2.4.0** — Made for job seekers who value their time.
